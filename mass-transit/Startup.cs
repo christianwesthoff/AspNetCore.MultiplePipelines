@@ -1,3 +1,4 @@
+using mass_transit.MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,15 +20,20 @@ namespace mass_transit
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddHostedService<>()
+            //services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseBranchWithServices("/api", 
-                services => { services.AddControllers(); }, api =>
+                services => { 
+                    services.AddControllers();
+                    services.AddEventBus();
+                }, api =>
             {
+                
                 if (env.IsDevelopment())
                 {
                     api.UseDeveloperExceptionPage();
@@ -42,21 +48,21 @@ namespace mass_transit
                 api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
             });
             app.UseBranchWithServices("/api2", 
-                services => { services.AddControllers(); }, api =>
+            services => { services.AddControllers(); }, api =>
+            {
+                if (env.IsDevelopment())
                 {
-                    if (env.IsDevelopment())
-                    {
-                        api.UseDeveloperExceptionPage();
-                    }
+                    api.UseDeveloperExceptionPage();
+                }
 
-                    api.UseHttpsRedirection();
+                api.UseHttpsRedirection();
 
-                    api.UseRouting();
+                api.UseRouting();
 
-                    api.UseAuthorization();
+                api.UseAuthorization();
 
-                    api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-                });
+                api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            });
         }
     }
 }
