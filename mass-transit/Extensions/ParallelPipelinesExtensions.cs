@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -68,18 +69,18 @@ namespace mass_transit.Extensions
         public static IApplicationBuilder UseBranchWithServices(this IApplicationBuilder app, string pipelineName, IEnumerable<PathString> paths,
             Action<IServiceCollection> servicesConfiguration, Action<IApplicationBuilder> appBuilderConfiguration, params Type[] sharedTypes)
         {
-            var webHost = new WebHostBuilder().
-                ConfigureServices(s => {
+            var webHost = new WebHostBuilder()
+                .ConfigureServices(s => {
                     s.AddSingleton<IServer, DummyServer>();
                     s.AddSingleton<IPipelineIdentity>(_ => new PipelineIdentity(pipelineName, paths));
                     sharedTypes.ForEach(type => s.AddTransient(type,
                         sp => app.ApplicationServices
                                   .GetService(type) ?? 
                               throw new NotSupportedException($"Shared type \"{type}\" is not registered in core service provider.")));
-                }).
-                ConfigureServices(servicesConfiguration).
-                UseStartup<EmptyStartup>().
-                Build();
+                })
+                .ConfigureServices(servicesConfiguration)
+                .UseStartup<EmptyStartup>()
+                .Build();
             
             var serviceProvider = webHost.Services;
             var serverFeatures = webHost.ServerFeatures;
@@ -97,12 +98,6 @@ namespace mass_transit.Extensions
                 using (var scope = factory.CreateScope())
                 {
                     context.RequestServices = scope.ServiceProvider;
-
-                    var coreServiceProviderAccessor = context.RequestServices
-                        .GetService<ICoreServiceProviderAccessor>();
-                    if (coreServiceProviderAccessor != null)
-                        coreServiceProviderAccessor.ServiceProvider = coreServiceProvider;
-                    
                     var httpContextAccessor = context.RequestServices
                         .GetService<IHttpContextAccessor>();
                     if (httpContextAccessor != null)
@@ -133,14 +128,16 @@ namespace mass_transit.Extensions
 
         private class PipelineIdentity : IPipelineIdentity
         {
-            public PipelineIdentity(string name, IEnumerable<PathString> paths)
+            public PipelineIdentity(string name, IEnumerable<PathString> paths, Assembly assembly)
             {
                 Name = name;
                 Paths = paths;
+                Assembly = assembly;
             }
             
             public string Name { get; }
             public IEnumerable<PathString> Paths { get; }
+            public Assembly Assembly { get; }
         }
 
         private class EmptyStartup
@@ -166,6 +163,7 @@ namespace mass_transit.Extensions
     {
         string Name { get; }
         IEnumerable<PathString> Paths { get; }
+        Assembly Assembly { get; }
     }
     
     public interface ICoreServiceProviderAccessor

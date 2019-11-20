@@ -30,9 +30,13 @@ namespace mass_transit.Extensions
         
         private static IBusControl ConfigureBus(IServiceProvider provider)
         {
-            return Bus.Factory.CreateUsingInMemory(bus =>
+            var pipelineServiceProviders = provider.GetRequiredService<IParallelPipelineServiceProviderBridge>();
+            return Bus.Factory.CreateUsingInMemory(cfg =>
             {
-                bus.ConfigureEndpoints(provider);
+                cfg.ReceiveEndpoint("service_queue", ep =>
+                {
+                    ep.Consumer();
+                });
             });
         }
 
