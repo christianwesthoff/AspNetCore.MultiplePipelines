@@ -14,12 +14,11 @@
           <e p="WeatherForecastController.cs" t="Include" />
         </e>
         <e p="extensions" t="Include">
-          <e p="ParallelApplicationPipelinesExtensions.cs" t="Include" />
+          <e p="AssemblyExtensions.cs" t="Include" />
+          <e p="EventBusServiceExtensions.cs" t="Include" />
+          <e p="ParallelPipelinesExtensions.cs" t="Include" />
         </e>
         <e p="mass-transit.csproj" t="IncludeRecursive" />
-        <e p="MassTransit" t="Include">
-          <e p="MassTransitServiceExtension.cs" t="Include" />
-        </e>
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
             <e p="netcoreapp3.0" t="Include">
@@ -32,6 +31,7 @@
           <e p="launchSettings.json" t="Include" />
         </e>
         <e p="Startup.cs" t="Include" />
+        <e p="TestConsumer.cs" t="Include" />
         <e p="WeatherForecast.cs" t="Include" />
       </e>
       <e p="mass-transit-test.sln" t="IncludeFlat" />
