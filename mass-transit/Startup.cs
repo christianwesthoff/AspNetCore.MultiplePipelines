@@ -20,8 +20,8 @@ namespace mass_transit
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddServiceProviderBridge();
-            services.AddEventBus();
+//            services.AddServiceProviderBridge();
+            services.AddEventBus(typeof(Startup).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -31,6 +31,7 @@ namespace mass_transit
                 services => 
                 {
                     services.AddControllers();
+                    services.AddScoped<TestConsumer>();
                 }, 
                 api =>
                 {
@@ -47,7 +48,7 @@ namespace mass_transit
                     api.UseAuthorization();
 
                     api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-                }, typeof(IBusControl), typeof(ISendEndpoint), typeof(IPublishEndpoint));
+                }, typeof(Startup).Assembly, typeof(IBusControl), typeof(ISendEndpoint), typeof(IPublishEndpoint));
             app.UseBranchWithServices("Mvc", "",
                 services =>
                 {
@@ -66,7 +67,7 @@ namespace mass_transit
                     api.UseAuthorization();
 
                     api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-                }, typeof(IBusControl), typeof(ISendEndpoint), typeof(IPublishEndpoint));
+                }, typeof(Startup).Assembly, typeof(IBusControl), typeof(ISendEndpoint), typeof(IPublishEndpoint));
         }
     }
 }

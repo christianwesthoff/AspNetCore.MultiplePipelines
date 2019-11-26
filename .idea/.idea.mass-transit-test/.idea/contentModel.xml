@@ -15,6 +15,7 @@
         </e>
         <e p="extensions" t="Include">
           <e p="AssemblyExtensions.cs" t="Include" />
+          <e p="DependencyInjectionConsumerScopeProvider.cs" t="Include" />
           <e p="EventBusServiceExtensions.cs" t="Include" />
           <e p="ParallelPipelinesExtensions.cs" t="Include" />
         </e>
