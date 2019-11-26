@@ -1,6 +1,8 @@
 using AspNetCore.PipelineBranches.Extensions;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AspNetCore.PipelineBranches
 {
@@ -16,10 +18,16 @@ namespace AspNetCore.PipelineBranches
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                     {
-                        webBuilder.UseKestrel().ConfigureMultiplePipelines(builder =>
+                        webBuilder.UseKestrel().UseMultiplePipelines(builder =>
                             {
-                                builder.AddBranch<Startup>("api1", "/api1");
-                                builder.AddBranch<Startup>("api2", "/api2");
+                                builder.UseBranch<Startup>("api1", "/api1");
+                                builder.UseBranch<Startup>("api2", "/api2");
+                            }, 
+                            new [] { 
+                                typeof(IBusControl), 
+                                typeof(IPublishEndpoint), 
+                                typeof(ISendEndpoint), 
+                                typeof(ILoggerFactory)
                             });
                     });
     }

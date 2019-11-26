@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
@@ -39,20 +39,20 @@ namespace AspNetCore.PipelineBranches.Extensions
 
     public interface IMultiplePipelineBuilder
     {
-        IMultiplePipelineBuilder AddBranch<T>(string name, PathString path);
-       IMultiplePipelineBuilder AddBranch(string name, PathString path, Type startupType);
+        IMultiplePipelineBuilder UseBranch<T>(string name, PathString path);
+       IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType);
     }
 
     public class DefaultMultiplePipelineBuilder : IMultiplePipelineBuilder
     {
         public ICollection<Branch> Branches { get; } = new List<Branch>();
 
-        public IMultiplePipelineBuilder AddBranch<T>(string name, PathString path)
+        public IMultiplePipelineBuilder UseBranch<T>(string name, PathString path)
         {
-            return AddBranch(name, path, typeof(T));
+            return UseBranch(name, path, typeof(T));
         }
 
-        public IMultiplePipelineBuilder AddBranch(string name, PathString path, Type startupType)
+        public IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType)
         {
             Branches.Add(new Branch(name, path, startupType));
             return this;
@@ -75,18 +75,23 @@ namespace AspNetCore.PipelineBranches.Extensions
 
     public static class ParallelPipelinesExtensions
     {
-        public static IWebHostBuilder ConfigureMultiplePipelines(this IWebHostBuilder webHost,
+        public static IWebHostBuilder UseMultiplePipelines(this IWebHostBuilder webHost,
+            Action<IMultiplePipelineBuilder> builderConfiguration, params Type[] sharedTypes) =>
+            UseMultiplePipelines(webHost,
+                builderConfiguration, null, sharedTypes);
+        
+        public static IWebHostBuilder UseMultiplePipelines(this IWebHostBuilder webHost,
             Action<IMultiplePipelineBuilder> builderConfiguration,
-            Action<IServiceCollection> serviceConfiguration = null)
+            Action<IServiceCollection> serviceConfiguration = null, params Type[] sharedTypes)
         {
             var pipelineBuilder = new DefaultMultiplePipelineBuilder();
             builderConfiguration.Invoke(pipelineBuilder);
-            var sharedServiceCollection = new ServiceCollection();
+            IServiceCollection sharedServiceCollection = null;
             return webHost.ConfigureServices(services =>
             {
                 services.AddServiceProviderBridge();
-                serviceConfiguration?.Invoke(sharedServiceCollection);
-                sharedServiceCollection.AddEventBus(configure =>
+                serviceConfiguration?.Invoke(services);
+                services.AddEventBus(configure =>
                 {
                     pipelineBuilder.Branches.ForEach(branch =>
                     {
@@ -106,7 +111,7 @@ namespace AspNetCore.PipelineBranches.Extensions
                             }));
                     });
                 });
-                sharedServiceCollection.ForEach(services.Add);
+                sharedServiceCollection = services;
             }).Configure((env, app) =>
             {
                 pipelineBuilder.Branches.ForEach(branch =>
@@ -118,12 +123,14 @@ namespace AspNetCore.PipelineBranches.Extensions
                         {
                             branch.StartupType.Assembly.FindDerivedTypes(typeof(IConsumer))
                                 .ForEach(consumerType => services.AddScoped(consumerType));
+                            
                             startup.ConfigureServicesDelegate(services);
                             
-                            services.AddSingleton(_ => app.ApplicationServices.GetService<IBusControl>());
-                            services.AddSingleton(_ => app.ApplicationServices.GetService<IPublishEndpoint>());
-                            services.AddSingleton(_ => app.ApplicationServices.GetService<ISendEndpoint>());
-                            services.AddSingleton(_ => app.ApplicationServices.GetService<ILoggerFactory>());
+                            sharedServiceCollection.Where(service => sharedTypes.Contains(service.ServiceType)).ForEach(service => 
+                                services.Add(new ServiceDescriptor(service.ServiceType, 
+                                    _ => app.ApplicationServices.GetService(service.ServiceType), 
+                                    service.Lifetime)));
+                            
                         },
                         startup.ConfigureDelegate);
                 });
