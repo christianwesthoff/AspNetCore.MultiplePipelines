@@ -7,16 +7,16 @@
     <e p="C:\Users\westh\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_mass-transit-test.-1434424001.00" t="ExcludeRecursive" />
     <e p="C:\Users\westh\Source\csharp\unified-asp-host" t="IncludeFlat">
       <e p=".git\info\exclude" t="IncludeRecursive" />
-      <e p="mass-transit" t="IncludeRecursive">
+      <e p="aspnetcore-branches" t="IncludeRecursive">
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
+        <e p="aspnetcore-branches.csproj" t="IncludeRecursive" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Controllers" t="Include">
           <e p="WeatherForecastController.cs" t="Include" />
         </e>
         <e p="extensions" t="Include">
           <e p="AssemblyExtensions.cs" t="Include" />
-          <e p="DependencyInjectionConsumerScopeProvider.cs" t="Include" />
           <e p="EventBusServiceExtensions.cs" t="Include" />
           <e p="ParallelPipelinesExtensions.cs" t="Include" />
           <e p="Startup" t="Include">
@@ -31,11 +31,10 @@
             <e p="StartupMethods.cs" t="Include" />
           </e>
         </e>
-        <e p="mass-transit.csproj" t="IncludeRecursive" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
             <e p="netcoreapp3.0" t="Include">
-              <e p="mass-transit.AssemblyInfo.cs" t="Include" />
+              <e p="aspnetcore-branches.AssemblyInfo.cs" t="Include" />
             </e>
           </e>
         </e>
