@@ -20,54 +20,25 @@ namespace mass_transit
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-//            services.AddServiceProviderBridge();
-            services.AddEventBus(typeof(Startup).Assembly);
+            services.AddControllers();
+            services.AddScoped<TestConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseBranchWithServices("Api", "/api", 
-                services => 
-                {
-                    services.AddControllers();
-                    services.AddScoped<TestConsumer>();
-                }, 
-                api =>
-                {
-                    
-                    if (env.IsDevelopment())
-                    {
-                        api.UseDeveloperExceptionPage();
-                    }
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
-                    api.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-                    api.UseRouting();
+            app.UseRouting();
 
-                    api.UseAuthorization();
+            app.UseAuthorization();
 
-                    api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-                }, typeof(Startup).Assembly, typeof(IBusControl), typeof(ISendEndpoint), typeof(IPublishEndpoint));
-            app.UseBranchWithServices("Mvc", "",
-                services =>
-                {
-                    services.AddControllers();
-                }, api =>
-                {
-                    if (env.IsDevelopment())
-                    {
-                        api.UseDeveloperExceptionPage();
-                    }
-
-                    api.UseHttpsRedirection();
-
-                    api.UseRouting();
-
-                    api.UseAuthorization();
-
-                    api.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-                }, typeof(Startup).Assembly, typeof(IBusControl), typeof(ISendEndpoint), typeof(IPublishEndpoint));
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

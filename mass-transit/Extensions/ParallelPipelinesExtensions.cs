@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,51 +38,127 @@ namespace mass_transit.Extensions
             return services;
         }
     }
-    
+
+    public static class MultiplePipelinesWebHostConfigurationExtension
+    {
+        public static IWebHostBuilder ConfigureMultiplePipelines(this IWebHostBuilder webHost, Action<IServiceCollection> serviceConfiguration, Action<IMultiplePipelineBuilder> builderConfiguration)
+        {
+            var pipelineBuilder = new DefaultMultiplePipelineBuilder();
+            builderConfiguration.Invoke(pipelineBuilder);
+            var sharedServiceCollection = new ServiceCollection();
+            webHost.ConfigureServices(services =>
+            {
+                services.AddServiceProviderBridge();
+                serviceConfiguration(sharedServiceCollection);
+                sharedServiceCollection.AddEventBus(configure =>
+                {
+                    pipelineBuilder.Branches.ForEach(branch =>
+                    {
+                        var pipelineAssembly = branch.StartupType.Assembly;
+                        configure.ConsumerConfigurations.Add(pipelineAssembly,
+                            (provider, type) =>
+                            {
+                                var pipelineServiceProvider = provider.GetRequiredService<IPipelineServiceProviderBridge>()
+                                    .PipelineServiceProviders[pipelineAssembly];
+                                using var pipelineScope = pipelineServiceProvider
+                                    .GetRequiredService<IServiceScopeFactory>().CreateScope();
+                                return (IConsumer)pipelineScope.ServiceProvider.GetService(type);
+                            });
+                    });
+                });
+                sharedServiceCollection.ForEach(services.Add);
+            });
+            webHost.Configure((env, app) =>
+            {
+                pipelineBuilder.Branches.ForEach(branch =>
+                {
+                    var startup = StartupLoader.LoadMethods(app.ApplicationServices, branch.StartupType,
+                        env.HostingEnvironment.EnvironmentName);
+
+                    app.UseBranch(branch.Name, branch.Path, (services) =>
+                        {
+                            sharedServiceCollection.ForEach(service => 
+                                services.Add(new ServiceDescriptor(service.ServiceType, _ => app.ApplicationServices.GetService(service.ServiceType), service.Lifetime)));
+                            branch.StartupType.Assembly.FindDerivedTypes(typeof(IConsumer)).ForEach(consumerType => services.AddScoped(consumerType));
+                            startup.ConfigureServicesDelegate(services);
+                        },
+                        startup.ConfigureDelegate);
+                });
+            });
+
+            return webHost;
+        }
+    }
+
+    public interface IMultiplePipelineBuilder
+    {
+        IMultiplePipelineBuilder AddBranch<T>(string name, PathString path);
+        IMultiplePipelineBuilder AddBranch(string name, PathString path, Type startupType);
+    }
+
+    public class DefaultMultiplePipelineBuilder : IMultiplePipelineBuilder
+    {
+        public ICollection<Branch> Branches => new List<Branch>();
+
+        public IMultiplePipelineBuilder AddBranch<T>(string name, PathString path)
+        {
+            return AddBranch(name, path, typeof(T));
+        }
+
+        public IMultiplePipelineBuilder AddBranch(string name, PathString path, Type startupType)
+        {
+            Branches.Add(new Branch(name, path, startupType));
+            return this;
+        }
+    }
+
+    public struct Branch
+    {
+        public Branch(string name, PathString path, Type startupType)
+        {
+            Name = name;
+            Path = path;
+            StartupType = startupType;
+        }
+        
+        public string Name { get;  }
+        public PathString Path { get; }
+        public Type StartupType { get; }
+    }
+
     public static class ParallelPipelinesExtensions
     {
         /// <summary>
         /// Sets up an application branch with an isolated DI container
         /// </summary>
         /// <param name="app">Application builder</param>
-        /// <param name="pipelineName">Pipeline name</param>
+        /// <param name="branchName">Pipeline name</param>
         /// <param name="path">Relative path for the application branch</param>
         /// <param name="servicesConfiguration">DI container configuration</param>
         /// <param name="appBuilderConfiguration">Application pipeline configuration for the created branch</param>
-        /// <param name="assembly">Assembly</param>
-        /// <param name="sharedTypes">Shared types</param>
-        public static IApplicationBuilder UseBranchWithServices(this IApplicationBuilder app, string pipelineName, PathString path, 
-            Action<IServiceCollection> servicesConfiguration, Action<IApplicationBuilder> appBuilderConfiguration, 
-            Assembly assembly, params Type[] sharedTypes)
+        public static IApplicationBuilder UseBranch(this IApplicationBuilder app, string branchName, PathString path, 
+            Action<IServiceCollection> servicesConfiguration, Action<IApplicationBuilder> appBuilderConfiguration)
         {
-            return app.UseBranchWithServices(pipelineName, new[] { path }, servicesConfiguration, appBuilderConfiguration, assembly, sharedTypes);
+            return app.UseBranch(branchName, new[] { path }, servicesConfiguration, appBuilderConfiguration);
         }
 
         /// <summary>
         /// Sets up an application branch with an isolated DI container with several routes (entry points)
         /// </summary>
         /// <param name="app">Application builder</param>
-        /// <param name="pipelineName">Pipeline name</param>
+        /// <param name="branchName">Pipeline name</param>
         /// <param name="paths">Relative paths for the application branch</param>
         /// <param name="servicesConfiguration">DI container configuration</param>
         /// <param name="appBuilderConfiguration">Application pipeline configuration for the created branch</param>
-        /// <param name="assembly">Assembly</param>
-        /// <param name="sharedTypes">Shared types</param>
-        public static IApplicationBuilder UseBranchWithServices(this IApplicationBuilder app, string pipelineName, IEnumerable<PathString> paths,
-            Action<IServiceCollection> servicesConfiguration, Action<IApplicationBuilder> appBuilderConfiguration, 
-            Assembly assembly, params Type[] sharedTypes)
+        public static IApplicationBuilder UseBranch(this IApplicationBuilder app, string branchName, IEnumerable<PathString> paths,
+            Action<IServiceCollection> servicesConfiguration, Action<IApplicationBuilder> appBuilderConfiguration)
         {
             var applicationServices = app.ApplicationServices;
-            var consumerTypes = assembly.FindDerivedTypes(typeof(IConsumer)).ToArray();
+
             var webHost = new WebHostBuilder()
                 .ConfigureServices(s => {
                     s.AddSingleton<IServer, DummyServer>();
-                    s.AddSingleton<IPipelineIdentity>(_ => new PipelineIdentity(pipelineName, paths));
-                    consumerTypes.ForEach(c => s.AddScoped(c));
-                    sharedTypes.ForEach(type => s.AddTransient(type,
-                        sp => applicationServices
-                                  .GetService(type) ?? 
-                              throw new NotSupportedException($"Shared type \"{type}\" is not registered in core service provider.")));
+                    s.AddSingleton<IPipelineIdentity>(_ => new PipelineIdentity(branchName, paths));
                 })
                 .ConfigureServices(servicesConfiguration)
                 .UseStartup<EmptyStartup>()
@@ -92,16 +166,6 @@ namespace mass_transit.Extensions
             
             var serviceProvider = webHost.Services;
             var serverFeatures = webHost.ServerFeatures;
-//            var bridge = app.ApplicationServices.GetRequiredService<IPipelineServiceProviderBridge>();            
-//            bridge.PipelineServiceProviders[assembly] = serviceProvider;
-
-            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-            
-            var busControl = applicationServices.GetRequiredService<IBusControl>();
-            consumerTypes.ForEach(consumerType =>
-            {
-                busControl.ConnectConsumer(() => (IConsumer<Test>)new TestConsumer(null));
-            });
             
             var appBuilderFactory = serviceProvider.GetRequiredService<IApplicationBuilderFactory>();
             var branchBuilder = appBuilderFactory.CreateBuilder(serverFeatures);
