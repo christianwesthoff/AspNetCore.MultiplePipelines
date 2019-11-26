@@ -6,9 +6,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Hosting
+namespace Microsoft.AspNetCore.Hosting.Internal
 {
-    internal class ConfigureServicesBuilder
+    public class ConfigureServicesBuilder
     {
         public ConfigureServicesBuilder(MethodInfo configureServices)
         {
@@ -50,7 +50,7 @@ namespace Microsoft.AspNetCore.Hosting
                 arguments[0] = services;
             }
 
-            return MethodInfo.InvokeWithoutWrappingExceptions(instance, arguments) as IServiceProvider;
+            return MethodInfo.Invoke(instance, arguments) as IServiceProvider;
         }
     }
 }

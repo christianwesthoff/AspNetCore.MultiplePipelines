@@ -8,9 +8,9 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Hosting
+namespace Microsoft.AspNetCore.Hosting.Internal
 {
-    internal class StartupLoader
+    public class StartupLoader
     {
         // Creates an <see cref="StartupMethods"/> instance with the actions to run for configuring the application services and the
         // request pipeline of the application.
@@ -130,24 +130,25 @@ namespace Microsoft.AspNetCore.Hosting
                     {
                         return applicationServiceProvider;
                     }
-
-                    // If there's a ConfigureContainer method
-                    if (ConfigureContainerBuilder.MethodInfo != null)
-                    {
-                        var serviceProviderFactory = HostingServiceProvider.GetRequiredService<IServiceProviderFactory<TContainerBuilder>>();
-                        var builder = serviceProviderFactory.CreateBuilder(services);
-                        configureContainerCallback(builder);
-                        applicationServiceProvider = serviceProviderFactory.CreateServiceProvider(builder);
-                    }
-                    else
-                    {
-                        // Get the default factory
-                        var serviceProviderFactory = HostingServiceProvider.GetRequiredService<IServiceProviderFactory<IServiceCollection>>();
-                        var builder = serviceProviderFactory.CreateBuilder(services);
-                        applicationServiceProvider = serviceProviderFactory.CreateServiceProvider(builder);
-                    }
-
-                    return applicationServiceProvider ?? services.BuildServiceProvider();
+//
+//                    // If there's a ConfigureContainer method
+//                    if (ConfigureContainerBuilder.MethodInfo != null)
+//                    {
+//                        var serviceProviderFactory = HostingServiceProvider.GetRequiredService<IServiceProviderFactory<TContainerBuilder>>();
+//                        var builder = serviceProviderFactory.CreateBuilder(services);
+//                        configureContainerCallback(builder);
+//                        applicationServiceProvider = serviceProviderFactory.CreateServiceProvider(builder);
+//                    }
+//                    else
+//                    {
+//                        // Get the default factory
+//                        var serviceProviderFactory = HostingServiceProvider.GetRequiredService<IServiceProviderFactory<IServiceCollection>>();
+//                        var builder = serviceProviderFactory.CreateBuilder(services);
+//                        applicationServiceProvider = serviceProviderFactory.CreateServiceProvider(builder);
+//                    }
+//
+//                    return applicationServiceProvider ?? services.BuildServiceProvider();
+                    return null;
                 }
             }
 
@@ -157,9 +158,7 @@ namespace Microsoft.AspNetCore.Hosting
 
                 IServiceProvider RunPipeline(IServiceCollection services)
                 {
-#pragma warning disable CS0612 // Type or member is obsolete
                     var filters = HostingServiceProvider.GetRequiredService<IEnumerable<IStartupConfigureServicesFilter>>().Reverse().ToArray();
-#pragma warning restore CS0612 // Type or member is obsolete
 
                     // If there are no filters just run startup (makes IServiceProvider ConfigureServices(IServiceCollection services) work.
                     if (filters.Length == 0)
@@ -184,11 +183,9 @@ namespace Microsoft.AspNetCore.Hosting
                         if (filters.Length > 0 && result != null)
                         {
                             // public IServiceProvider ConfigureServices(IServiceCollection serviceCollection) is not compatible with IStartupServicesFilter;
-#pragma warning disable CS0612 // Type or member is obsolete
                             var message = $"A ConfigureServices method that returns an {nameof(IServiceProvider)} is " +
                                 $"not compatible with the use of one or more {nameof(IStartupConfigureServicesFilter)}. " +
                                 $"Use a void returning ConfigureServices method instead or a ConfigureContainer method.";
-#pragma warning restore CS0612 // Type or member is obsolete
                             throw new InvalidOperationException(message);
                         };
                     }
@@ -202,9 +199,7 @@ namespace Microsoft.AspNetCore.Hosting
                 void RunPipeline(TContainerBuilder containerBuilder)
                 {
                     var filters = HostingServiceProvider
-#pragma warning disable CS0612 // Type or member is obsolete
                         .GetRequiredService<IEnumerable<IStartupConfigureContainerFilter<TContainerBuilder>>>()
-#pragma warning restore CS0612 // Type or member is obsolete
                         .Reverse()
                         .ToArray();
 
@@ -283,11 +278,6 @@ namespace Microsoft.AspNetCore.Hosting
         {
             var configureMethod = FindMethod(startupType, "Configure{0}Container", environmentName, typeof(void), required: false);
             return new ConfigureContainerBuilder(configureMethod);
-        }
-
-        internal static bool HasConfigureServicesIServiceProviderDelegate(Type startupType, string environmentName)
-        {
-            return null != FindMethod(startupType, "Configure{0}Services", environmentName, typeof(IServiceProvider), required: false);
         }
 
         internal static ConfigureServicesBuilder FindConfigureServicesDelegate(Type startupType, string environmentName)

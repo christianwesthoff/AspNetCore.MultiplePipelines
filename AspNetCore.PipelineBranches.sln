@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aspnetcore-branches", "aspnetcore-branches\aspnetcore-branches.csproj", "{8D4944A6-692A-403E-B1CC-1BA25F1FA79E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.PipelineBranches", "AspNetCore.PipelineBranches\AspNetCore.PipelineBranches.csproj", "{8D4944A6-692A-403E-B1CC-1BA25F1FA79E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

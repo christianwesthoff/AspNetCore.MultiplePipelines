@@ -5,9 +5,11 @@ using System;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Hosting
+namespace AspNetCore.PipelineBranches.Extensions.Startup
 {
     internal class ConventionBasedStartup : IStartup
     {
@@ -39,7 +41,8 @@ namespace Microsoft.AspNetCore.Hosting
         {
             try
             {
-                return _methods.ConfigureServicesDelegate(services);
+                _methods.ConfigureServicesDelegate(services);
+                return null;
             }
             catch (Exception ex)
             {

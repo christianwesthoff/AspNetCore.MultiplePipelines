@@ -1,11 +1,9 @@
-using System.Diagnostics;
 using System.Threading.Tasks;
-using mass_transit.Extensions;
+using AspNetCore.PipelineBranches.Extensions;
 using MassTransit;
-using MassTransit.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace mass_transit
+namespace AspNetCore.PipelineBranches
 {
     public class Test
     {
@@ -20,15 +18,17 @@ namespace mass_transit
     public class TestConsumer: IConsumer<Test>
     {
         private readonly ILogger<TestConsumer> _logger;
+        private readonly IPipelineIdentity _identity;
 
-        public TestConsumer(ILogger<TestConsumer> logger)
+        public TestConsumer(ILogger<TestConsumer> logger, IPipelineIdentity identity)
         {
             _logger = logger;
+            _identity = identity;
         }
         
         public async Task Consume(ConsumeContext<Test> context)
         {
-            _logger.LogDebug(context.Message.Content);
+            _logger.LogCritical($"[{_identity.Name}] {context.Message.Content}");
             await Task.CompletedTask;
         }
     }

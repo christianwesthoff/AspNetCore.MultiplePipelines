@@ -1,12 +1,10 @@
-using mass_transit.Extensions;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace mass_transit
+namespace AspNetCore.PipelineBranches
 {
     public class Startup
     {
@@ -21,7 +19,6 @@ namespace mass_transit
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<TestConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

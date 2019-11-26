@@ -1,6 +1,6 @@
 using System;
 
-namespace mass_transit
+namespace AspNetCore.PipelineBranches
 {
     public class WeatherForecast
     {

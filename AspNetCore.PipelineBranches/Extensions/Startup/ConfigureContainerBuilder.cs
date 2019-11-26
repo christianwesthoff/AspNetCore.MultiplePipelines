@@ -4,9 +4,9 @@
 using System;
 using System.Reflection;
 
-namespace Microsoft.AspNetCore.Hosting
+namespace Microsoft.AspNetCore.Hosting.Internal
 {
-    internal class ConfigureContainerBuilder
+    public class ConfigureContainerBuilder
     {
         public ConfigureContainerBuilder(MethodInfo configureContainerMethod)
         {
@@ -46,7 +46,7 @@ namespace Microsoft.AspNetCore.Hosting
 
             var arguments = new object[1] { container };
 
-            MethodInfo.InvokeWithoutWrappingExceptions(instance, arguments);
+            MethodInfo.Invoke(instance, arguments);
         }
     }
 }

@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 
-namespace mass_transit.Extensions
+namespace AspNetCore.PipelineBranches.Extensions
 {
 
     public static class EventBusServiceExtensions
     {
-
         public static IServiceCollection AddEventBus(this IServiceCollection services, Action<IBusConfiguration> configure = null)
         {
             services.AddMassTransit(cfg =>
@@ -24,15 +22,10 @@ namespace mass_transit.Extensions
             return services;
         }
 
-        public interface IBusConfiguration
-        {
-            IDictionary<Assembly, Func<IServiceProvider, Type, IConsumer>> ConsumerConfigurations { get; }
-        }
-        
         private class DefaultBusConfiguration : IBusConfiguration
         {
-            public IDictionary<Assembly, Func<IServiceProvider, Type, IConsumer>> ConsumerConfigurations { get; } = 
-                new Dictionary<Assembly, Func<IServiceProvider, Type, IConsumer>>();
+            public IDictionary<string, ConsumerConfiguration> ConsumerConfigurations { get; } = 
+                new Dictionary<string, ConsumerConfiguration>();
         }
 
         private static IBusControl ConfigureBus(IServiceProvider provider, IBusConfiguration configuration)
@@ -41,22 +34,30 @@ namespace mass_transit.Extensions
             {
                 cfg.ReceiveEndpoint("queue", ep =>
                 {
-                    configuration.ConsumerConfigurations.ForEach((assembly, configure) =>
+                    configuration.ConsumerConfigurations.ForEach((name, consumerConfiguration) =>
                     {
-                        var consumerTypes = assembly.FindDerivedTypes(typeof(IConsumer));
-                        consumerTypes.ForEach(consumerType => ep.Consumer(consumerType, type => configure(provider, type)));
+                        var consumerTypes = consumerConfiguration.Assembly.FindDerivedTypes(typeof(IConsumer));
+                        consumerTypes.ForEach(consumerType => ep.Consumer(consumerType, type => consumerConfiguration.Configure(provider, type)));
                     });
                 });
             });
         }
+    }
+    
+    public interface IBusConfiguration
+    {
+        IDictionary<string, ConsumerConfiguration> ConsumerConfigurations { get; }
+    }
         
-        public static void ForEach<T, TE>(this IDictionary<T, TE> source, Action<T, TE> action)
+    public class ConsumerConfiguration
+    {
+        public ConsumerConfiguration(Assembly assembly, Func<IServiceProvider, Type, IConsumer> configure)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            
-            foreach (var element in source)
-                action(element.Key, element.Value);
+            Assembly = assembly;
+            Configure = configure;
         }
+            
+        public Assembly Assembly { get; }
+        public Func<IServiceProvider, Type, IConsumer> Configure { get; }
     }
 }
