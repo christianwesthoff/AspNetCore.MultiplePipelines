@@ -39,7 +39,7 @@ namespace AspNetCore.MultiplePipelines.Extensions
             sharedTypes = sharedTypes.Concat(DefaultSharedTypes).ToArray();
             var pipelineBuilder = new DefaultMultiplePipelineBuilder();
             builderConfiguration.Invoke(pipelineBuilder);
-            IServiceCollection sharedServiceCollection = null;
+            IEnumerable<ServiceDescriptor> sharedServices = null;
             return webHost.ConfigureServices(services =>
             {
                 services.AddServiceProviderBridge();
@@ -64,7 +64,7 @@ namespace AspNetCore.MultiplePipelines.Extensions
                             }));
                     });
                 });
-                sharedServiceCollection = services;
+                sharedServices = services.Where(service => sharedTypes.Contains(service.ServiceType));
             }).Configure((context, builder) =>
             {
                 pipelineBuilder.Branches.ForEach(branch =>
@@ -78,7 +78,7 @@ namespace AspNetCore.MultiplePipelines.Extensions
                             
                             startup.ConfigureServicesDelegate(services);
                             
-                            sharedServiceCollection.Where(service => sharedTypes.Contains(service.ServiceType)).ForEach(service => 
+                            sharedServices.ForEach(service => 
                                 services.Add(new ServiceDescriptor(service.ServiceType, 
                                     _ => builder.ApplicationServices.GetService(service.ServiceType), 
                                     service.Lifetime)));
