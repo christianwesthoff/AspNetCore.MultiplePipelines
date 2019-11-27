@@ -1,10 +1,10 @@
-using AspNetCore.PipelineBranches.Extensions;
+using AspNetCore.MultiplePipelines.Extensions;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.PipelineBranches
+namespace AspNetCore.MultiplePipelines
 {
     public class Program
     {

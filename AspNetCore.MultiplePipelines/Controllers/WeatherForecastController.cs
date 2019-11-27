@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNetCore.PipelineBranches.Extensions;
+using AspNetCore.MultiplePipelines.Extensions;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.PipelineBranches.Controllers
+namespace AspNetCore.MultiplePipelines.Controllers
 {
     [ApiController]
     [Route("[controller]")]

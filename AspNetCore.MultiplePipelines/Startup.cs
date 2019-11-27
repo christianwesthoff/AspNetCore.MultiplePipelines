@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace AspNetCore.PipelineBranches
+namespace AspNetCore.MultiplePipelines
 {
     public class Startup
     {

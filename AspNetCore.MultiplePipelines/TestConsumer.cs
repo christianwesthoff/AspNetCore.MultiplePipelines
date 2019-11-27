@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using AspNetCore.PipelineBranches.Extensions;
+using AspNetCore.MultiplePipelines.Extensions;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.PipelineBranches
+namespace AspNetCore.MultiplePipelines
 {
     public class Test
     {

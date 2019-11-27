@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AspNetCore.PipelineBranches.Extensions.Startup
+namespace AspNetCore.MultiplePipelines.Extensions.Startup
 {
     internal class ConventionBasedStartup : IStartup
     {

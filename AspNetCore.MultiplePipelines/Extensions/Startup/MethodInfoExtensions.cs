@@ -3,7 +3,7 @@
 
 using System.Reflection;
 
-namespace AspNetCore.PipelineBranches.Extensions.Startup
+namespace AspNetCore.MultiplePipelines.Extensions.Startup
 {
     internal static class MethodInfoExtensions
     {

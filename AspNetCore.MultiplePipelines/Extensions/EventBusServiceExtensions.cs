@@ -5,7 +5,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using MoreLinq;
 
-namespace AspNetCore.PipelineBranches.Extensions
+namespace AspNetCore.MultiplePipelines.Extensions
 {
 
     public static class EventBusServiceExtensions

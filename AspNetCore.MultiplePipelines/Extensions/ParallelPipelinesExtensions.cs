@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MoreLinq;
 
-namespace AspNetCore.PipelineBranches.Extensions
+namespace AspNetCore.MultiplePipelines.Extensions
 {
     public static class ParallelPipelinesExtensions
     {

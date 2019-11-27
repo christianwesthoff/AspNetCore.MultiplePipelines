@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AspNetCore.PipelineBranches.Extensions
+namespace AspNetCore.MultiplePipelines.Extensions
 {
     public static class EnumerableExtensions
     {
