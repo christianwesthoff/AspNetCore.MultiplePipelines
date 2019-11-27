@@ -65,13 +65,13 @@ namespace AspNetCore.MultiplePipelines.Extensions
                     });
                 });
                 sharedServiceCollection = services;
-            }).Configure((env, app) =>
+            }).Configure((context, builder) =>
             {
                 pipelineBuilder.Branches.ForEach(branch =>
                 {
-                    var startup = StartupLoader.LoadMethods(app.ApplicationServices, branch.StartupType,
-                        env.HostingEnvironment.EnvironmentName);
-                    app.UseBranch(branch.Name, branch.Path, (services) =>
+                    var startup = StartupLoader.LoadMethods(builder.ApplicationServices, branch.StartupType,
+                        context.HostingEnvironment.EnvironmentName);
+                    builder.UseBranch(branch.Name, branch.Path, (services) =>
                         {
                             branch.StartupType.Assembly.FindDerivedTypes(typeof(IConsumer))
                                 .ForEach(consumerType => services.AddScoped(consumerType));
@@ -80,7 +80,7 @@ namespace AspNetCore.MultiplePipelines.Extensions
                             
                             sharedServiceCollection.Where(service => sharedTypes.Contains(service.ServiceType)).ForEach(service => 
                                 services.Add(new ServiceDescriptor(service.ServiceType, 
-                                    _ => app.ApplicationServices.GetService(service.ServiceType), 
+                                    _ => builder.ApplicationServices.GetService(service.ServiceType), 
                                     service.Lifetime)));
                             
                         },

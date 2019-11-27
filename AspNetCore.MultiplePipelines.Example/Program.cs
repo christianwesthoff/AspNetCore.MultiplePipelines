@@ -1,10 +1,8 @@
 using AspNetCore.MultiplePipelines.Extensions;
-using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.MultiplePipelines
+namespace AspNetCore.MultiplePipelines.Example
 {
     public class Program
     {
@@ -18,8 +16,8 @@ namespace AspNetCore.MultiplePipelines
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                     {
-                        webBuilder.UseKestrel().
-                            UseMultiplePipelines(builder =>
+                        webBuilder.UseKestrel()
+                            .UseMultiplePipelines(builder =>
                             {
                                 builder.UseBranch<Startup>("api1", "/api");
                                 builder.UseBranch<Startup>("api2", "/api1");

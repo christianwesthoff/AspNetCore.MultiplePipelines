@@ -8,7 +8,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.MultiplePipelines.Controllers
+namespace AspNetCore.MultiplePipelines.Example.Controllers
 {
     [ApiController]
     [Route("[controller]")]
