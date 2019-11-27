@@ -75,6 +75,14 @@ namespace AspNetCore.PipelineBranches.Extensions
 
     public static class ParallelPipelinesExtensions
     {
+        private static readonly Type[] DefaultSharedTypes =
+        {
+            typeof(IBusControl),
+            typeof(IPublishEndpoint),
+            typeof(ISendEndpoint),
+            typeof(ILoggerFactory)
+        };
+        
         public static IWebHostBuilder UseMultiplePipelines(this IWebHostBuilder webHost,
             Action<IMultiplePipelineBuilder> builderConfiguration, params Type[] sharedTypes) =>
             UseMultiplePipelines(webHost,
@@ -84,6 +92,7 @@ namespace AspNetCore.PipelineBranches.Extensions
             Action<IMultiplePipelineBuilder> builderConfiguration,
             Action<IServiceCollection> serviceConfiguration = null, params Type[] sharedTypes)
         {
+            sharedTypes = sharedTypes.Concat(DefaultSharedTypes).ToArray();
             var pipelineBuilder = new DefaultMultiplePipelineBuilder();
             builderConfiguration.Invoke(pipelineBuilder);
             IServiceCollection sharedServiceCollection = null;

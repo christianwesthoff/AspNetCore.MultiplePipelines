@@ -18,16 +18,12 @@ namespace AspNetCore.PipelineBranches
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                     {
-                        webBuilder.UseKestrel().UseMultiplePipelines(builder =>
+                        webBuilder.UseKestrel().
+                            UseMultiplePipelines(builder =>
                             {
-                                builder.UseBranch<Startup>("api1", "/api1");
-                                builder.UseBranch<Startup>("api2", "/api2");
-                            }, 
-                            new [] { 
-                                typeof(IBusControl), 
-                                typeof(IPublishEndpoint), 
-                                typeof(ISendEndpoint), 
-                                typeof(ILoggerFactory)
+                                builder.UseBranch<Startup>("api1", "/api");
+                                builder.UseBranch<Startup>("api2", "/api1");
+                                builder.UseBranch<Startup>("default", "");
                             });
                     });
     }
