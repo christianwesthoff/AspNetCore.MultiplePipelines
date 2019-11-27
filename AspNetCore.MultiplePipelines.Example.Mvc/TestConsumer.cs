@@ -28,7 +28,7 @@ namespace AspNetCore.MultiplePipelines.Example.Mvc
         
         public async Task Consume(ConsumeContext<Test> context)
         {
-            _logger.LogCritical($"[{_identity.Name}] {context.Message.Content}");
+            _logger.LogInformation($"[{_identity.Name}] {context.Message.Content}");
             await Task.CompletedTask;
         }
     }
