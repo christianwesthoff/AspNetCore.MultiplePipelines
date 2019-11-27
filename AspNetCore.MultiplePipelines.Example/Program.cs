@@ -1,3 +1,4 @@
+using AspNetCore.MultiplePipelines.Example.Mvc;
 using AspNetCore.MultiplePipelines.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;

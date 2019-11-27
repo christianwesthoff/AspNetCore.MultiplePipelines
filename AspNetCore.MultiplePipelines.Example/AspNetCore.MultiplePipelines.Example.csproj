@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AspNetCore.MultiplePipelines.Example.Mvc\AspNetCore.MultiplePipelines.Example.Mvc.csproj" />
       <ProjectReference Include="..\AspNetCore.MultiplePipelines\AspNetCore.MultiplePipelines.csproj" />
     </ItemGroup>
 

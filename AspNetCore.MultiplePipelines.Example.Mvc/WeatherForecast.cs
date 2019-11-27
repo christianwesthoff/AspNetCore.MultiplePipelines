@@ -1,6 +1,6 @@
 using System;
 
-namespace AspNetCore.MultiplePipelines.Example
+namespace AspNetCore.MultiplePipelines.Example.Mvc
 {
     public class WeatherForecast
     {

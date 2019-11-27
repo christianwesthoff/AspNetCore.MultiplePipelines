@@ -3,7 +3,7 @@ using AspNetCore.MultiplePipelines.Extensions;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace AspNetCore.MultiplePipelines.Example
+namespace AspNetCore.MultiplePipelines.Example.Mvc
 {
     public class Test
     {

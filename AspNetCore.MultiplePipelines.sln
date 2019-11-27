@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipeline
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example", "AspNetCore.MultiplePipelines.Example\AspNetCore.MultiplePipelines.Example.csproj", "{EE727D2C-00B2-4064-BE16-64AD842176D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example.Mvc", "AspNetCore.MultiplePipelines.Example.Mvc\AspNetCore.MultiplePipelines.Example.Mvc.csproj", "{2E0C7546-584A-4748-B433-922F55D13DCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{EE727D2C-00B2-4064-BE16-64AD842176D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE727D2C-00B2-4064-BE16-64AD842176D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE727D2C-00B2-4064-BE16-64AD842176D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E0C7546-584A-4748-B433-922F55D13DCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E0C7546-584A-4748-B433-922F55D13DCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E0C7546-584A-4748-B433-922F55D13DCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E0C7546-584A-4748-B433-922F55D13DCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
