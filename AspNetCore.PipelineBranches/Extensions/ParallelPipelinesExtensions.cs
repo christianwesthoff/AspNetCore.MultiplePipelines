@@ -17,62 +17,6 @@ using MoreLinq;
 
 namespace AspNetCore.PipelineBranches.Extensions
 {
-    public interface IPipelineServiceProviderBridge
-    {
-        IDictionary<string, IServiceProvider> PipelineServiceProviders { get; }
-    }
-
-    public class PipelineServiceProviderBridge : IPipelineServiceProviderBridge
-    {
-        public IDictionary<string, IServiceProvider> PipelineServiceProviders { get; } = new Dictionary<string, IServiceProvider>();
-    }
-
-    public static class ParallelServiceProviderBridgeServiceExtension
-    {
-        public static IServiceCollection AddServiceProviderBridge(this IServiceCollection services)
-        {
-            services.AddSingleton<IPipelineServiceProviderBridge, PipelineServiceProviderBridge>();
-            return services;
-        }
-    }
-
-
-    public interface IMultiplePipelineBuilder
-    {
-        IMultiplePipelineBuilder UseBranch<T>(string name, PathString path);
-       IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType);
-    }
-
-    public class DefaultMultiplePipelineBuilder : IMultiplePipelineBuilder
-    {
-        public ICollection<Branch> Branches { get; } = new List<Branch>();
-
-        public IMultiplePipelineBuilder UseBranch<T>(string name, PathString path)
-        {
-            return UseBranch(name, path, typeof(T));
-        }
-
-        public IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType)
-        {
-            Branches.Add(new Branch(name, path, startupType));
-            return this;
-        }
-    }
-
-    public class Branch
-    {
-        public Branch(string name, PathString path, Type startupType)
-        {
-            Name = name;
-            Path = path;
-            StartupType = startupType;
-        }
-        
-        public string Name { get;  }
-        public PathString Path { get; }
-        public Type StartupType { get; }
-    }
-
     public static class ParallelPipelinesExtensions
     {
         private static readonly Type[] DefaultSharedTypes =
@@ -127,7 +71,6 @@ namespace AspNetCore.PipelineBranches.Extensions
                 {
                     var startup = StartupLoader.LoadMethods(app.ApplicationServices, branch.StartupType,
                         env.HostingEnvironment.EnvironmentName);
-
                     app.UseBranch(branch.Name, branch.Path, (services) =>
                         {
                             branch.StartupType.Assembly.FindDerivedTypes(typeof(IConsumer))
@@ -141,7 +84,7 @@ namespace AspNetCore.PipelineBranches.Extensions
                                     service.Lifetime)));
                             
                         },
-                        startup.ConfigureDelegate);
+                    startup.ConfigureDelegate);
                 });
             });
         }
@@ -260,5 +203,61 @@ namespace AspNetCore.PipelineBranches.Extensions
     {
         string Name { get; }
         IEnumerable<PathString> Paths { get; }
+    }
+    
+    public interface IPipelineServiceProviderBridge
+    {
+        IDictionary<string, IServiceProvider> PipelineServiceProviders { get; }
+    }
+
+    public class PipelineServiceProviderBridge : IPipelineServiceProviderBridge
+    {
+        public IDictionary<string, IServiceProvider> PipelineServiceProviders { get; } = new Dictionary<string, IServiceProvider>();
+    }
+
+    public static class ParallelServiceProviderBridgeServiceExtension
+    {
+        public static IServiceCollection AddServiceProviderBridge(this IServiceCollection services)
+        {
+            services.AddSingleton<IPipelineServiceProviderBridge, PipelineServiceProviderBridge>();
+            return services;
+        }
+    }
+
+
+    public interface IMultiplePipelineBuilder
+    {
+        IMultiplePipelineBuilder UseBranch<T>(string name, PathString path);
+        IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType);
+    }
+
+    public class DefaultMultiplePipelineBuilder : IMultiplePipelineBuilder
+    {
+        public ICollection<Branch> Branches { get; } = new List<Branch>();
+
+        public IMultiplePipelineBuilder UseBranch<T>(string name, PathString path)
+        {
+            return UseBranch(name, path, typeof(T));
+        }
+
+        public IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType)
+        {
+            Branches.Add(new Branch(name, path, startupType));
+            return this;
+        }
+    }
+
+    public class Branch
+    {
+        public Branch(string name, PathString path, Type startupType)
+        {
+            Name = name;
+            Path = path;
+            StartupType = startupType;
+        }
+        
+        public string Name { get;  }
+        public PathString Path { get; }
+        public Type StartupType { get; }
     }
 }
