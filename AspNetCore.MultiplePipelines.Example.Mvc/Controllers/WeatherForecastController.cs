@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNetCore.MultiplePipelines.Example.Mvc;
 using AspNetCore.MultiplePipelines.Extensions;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
