@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +21,7 @@ namespace AspNetCore.MultiplePipelines.Example.Mvc
         {
             services
                 .AddControllers()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddApplicationPart(typeof(Startup).Assembly);
         }
 

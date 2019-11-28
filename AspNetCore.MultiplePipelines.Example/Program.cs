@@ -20,8 +20,8 @@ namespace AspNetCore.MultiplePipelines.Example
                         webBuilder.UseKestrel()
                             .UseMultiplePipelines(builder =>
                             {
-                                builder.UseBranch<Startup>("api1", "/api");
-                                builder.UseBranch<Startup>("api2", "/api1");
+                                builder.UseBranch<Startup>("api", "/api");
+                                builder.UseBranch<Startup>("api1", "/api1");
                                 builder.UseBranch<Startup>("default", "");
                             });
                     });
