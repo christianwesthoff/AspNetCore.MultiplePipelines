@@ -1,4 +1,3 @@
-using AspNetCore.MultiplePipelines.Example.Mvc;
 using AspNetCore.MultiplePipelines.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -20,9 +19,9 @@ namespace AspNetCore.MultiplePipelines.Example
                         webBuilder.UseKestrel()
                             .UseMultiplePipelines(builder =>
                             {
-                                builder.UseBranch<Startup>("api", "/api");
-                                builder.UseBranch<Startup>("api1", "/api1");
-                                builder.UseBranch<Startup>("default", "");
+                                builder.UseBranch<Test.Startup>("test", "/test");
+                                builder.UseBranch<Test2.Startup>("test2", "/test2");
+                                // builder.UseBranch<Mvc.Startup>("default", "");
                             });
                     });
     }

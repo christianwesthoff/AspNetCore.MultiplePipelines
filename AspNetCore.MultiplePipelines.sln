@@ -4,7 +4,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipeline
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example", "AspNetCore.MultiplePipelines.Example\AspNetCore.MultiplePipelines.Example.csproj", "{EE727D2C-00B2-4064-BE16-64AD842176D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example.Mvc", "AspNetCore.MultiplePipelines.Example.Mvc\AspNetCore.MultiplePipelines.Example.Mvc.csproj", "{2E0C7546-584A-4748-B433-922F55D13DCE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example.Test", "AspNetCore.MultiplePipelines.Example.Test\AspNetCore.MultiplePipelines.Example.Test.csproj", "{F1B885D4-4B18-4DD8-880B-5ADB46B8A9A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example.Test2", "AspNetCore.MultiplePipelines.Example.Test2\AspNetCore.MultiplePipelines.Example.Test2.csproj", "{749B8BE9-7AAD-4808-8ECC-55BE1AA2017C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MultiplePipelines.Example.Events", "AspNetCore.MultiplePipelines.Example.Events\AspNetCore.MultiplePipelines.Example.Events.csproj", "{AB812737-554B-4240-853E-3AD443538BF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +24,17 @@ Global
 		{EE727D2C-00B2-4064-BE16-64AD842176D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE727D2C-00B2-4064-BE16-64AD842176D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE727D2C-00B2-4064-BE16-64AD842176D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E0C7546-584A-4748-B433-922F55D13DCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E0C7546-584A-4748-B433-922F55D13DCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E0C7546-584A-4748-B433-922F55D13DCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E0C7546-584A-4748-B433-922F55D13DCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1B885D4-4B18-4DD8-880B-5ADB46B8A9A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1B885D4-4B18-4DD8-880B-5ADB46B8A9A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1B885D4-4B18-4DD8-880B-5ADB46B8A9A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1B885D4-4B18-4DD8-880B-5ADB46B8A9A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{749B8BE9-7AAD-4808-8ECC-55BE1AA2017C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{749B8BE9-7AAD-4808-8ECC-55BE1AA2017C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749B8BE9-7AAD-4808-8ECC-55BE1AA2017C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{749B8BE9-7AAD-4808-8ECC-55BE1AA2017C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB812737-554B-4240-853E-3AD443538BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB812737-554B-4240-853E-3AD443538BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB812737-554B-4240-853E-3AD443538BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB812737-554B-4240-853E-3AD443538BF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

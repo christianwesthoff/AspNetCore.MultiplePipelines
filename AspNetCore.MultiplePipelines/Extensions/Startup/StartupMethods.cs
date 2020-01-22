@@ -6,9 +6,9 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Hosting.Internal
+namespace AspNetCore.MultiplePipelines.Extensions.Startup
 {
-    public class StartupMethods
+    internal class StartupMethods
     {
         public StartupMethods(object instance, Action<IApplicationBuilder> configure, Func<IServiceCollection, IServiceProvider> configureServices)
         {

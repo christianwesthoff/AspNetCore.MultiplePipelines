@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AspNetCore.MultiplePipelines.Extensions.Startup;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Builder;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -71,7 +71,7 @@ namespace AspNetCore.MultiplePipelines.Extensions
                 {
                     var startup = StartupLoader.LoadMethods(builder.ApplicationServices, branch.StartupType,
                         context.HostingEnvironment.EnvironmentName);
-                    builder.UseBranch(branch.Name, branch.Path, (services) =>
+                    builder.UseBranch(branch.Name, branch.Paths, (services) =>
                         {
                             branch.StartupType.Assembly.FindDerivedTypes(typeof(IConsumer))
                                 .ForEach(consumerType => services.AddScoped(consumerType));
@@ -80,12 +80,18 @@ namespace AspNetCore.MultiplePipelines.Extensions
                             
                             sharedServices.ForEach(service => 
                                 services.Add(new ServiceDescriptor(service.ServiceType, 
-                                    _ => builder.ApplicationServices.GetService(service.ServiceType), 
+                                    _ => builder.ApplicationServices.GetService(service.ServiceType),
                                     service.Lifetime)));
                             
-                        },
-                    startup.ConfigureDelegate);
+                        }, startup.ConfigureDelegate);
                 });
+                if (pipelineBuilder.Branches.All(branch => branch.Paths.All(path => path != string.Empty)))
+                {
+                    builder.Map(string.Empty, builder1 =>
+                    {
+                        builder1.Use(async (context1, next) => { await context1.Response.WriteAsync("App running!"); });
+                    });
+                }
             });
         }
 
@@ -93,14 +99,14 @@ namespace AspNetCore.MultiplePipelines.Extensions
         {
             public ICollection<Branch> Branches { get; } = new List<Branch>();
 
-            public IMultiplePipelineBuilder UseBranch<T>(string name, PathString path)
+            public IMultiplePipelineBuilder UseBranch<T>(string name, PathString[] paths)
             {
-                return UseBranch(name, path, typeof(T));
+                return UseBranch(name, typeof(T), paths);
             }
 
-            public IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType)
+            public IMultiplePipelineBuilder UseBranch(string name, Type startupType, PathString[] paths)
             {
-                Branches.Add(new Branch(name, path, startupType));
+                Branches.Add(new Branch(name, startupType, paths));
                 return this;
             }
         }
@@ -227,11 +233,18 @@ namespace AspNetCore.MultiplePipelines.Extensions
         IDictionary<string, IServiceProvider> PipelineServiceProviders { get; }
     }
 
+    public interface IRootServiceProviderBridge
+    {
+        IServiceProvider RootServiceProvider { get; set; }
+    }
+
+    
     public static class ParallelServiceProviderBridgeServiceExtension
     {
         public static IServiceCollection AddServiceProviderBridge(this IServiceCollection services)
         {
             services.AddSingleton<IPipelineServiceProviderBridge, PipelineServiceProviderBridge>();
+            // services.AddScoped<IRootServiceProviderBridge, RootServiceProviderBridge>();
             return services;
         }
         
@@ -239,26 +252,31 @@ namespace AspNetCore.MultiplePipelines.Extensions
         {
             public IDictionary<string, IServiceProvider> PipelineServiceProviders { get; } = new Dictionary<string, IServiceProvider>();
         }
+        
+        private class RootServiceProviderBridge : IRootServiceProviderBridge
+        {
+            public IServiceProvider RootServiceProvider { get; set; }
+        }
     }
 
 
     public interface IMultiplePipelineBuilder
     {
-        IMultiplePipelineBuilder UseBranch<T>(string name, PathString path);
-        IMultiplePipelineBuilder UseBranch(string name, PathString path, Type startupType);
+        IMultiplePipelineBuilder UseBranch<T>(string name, params PathString[] paths);
+        IMultiplePipelineBuilder UseBranch(string name, Type startupType, params PathString[] paths);
     }
     
     public sealed class Branch
     {
-        public Branch(string name, PathString path, Type startupType)
+        public Branch(string name, Type startupType, PathString[] paths)
         {
             Name = name;
-            Path = path;
+            Paths = paths;
             StartupType = startupType;
         }
         
         public string Name { get;  }
-        public PathString Path { get; }
+        public PathString[] Paths { get; }
         public Type StartupType { get; }
     }
 }

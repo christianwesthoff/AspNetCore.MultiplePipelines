@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,7 @@ namespace AspNetCore.MultiplePipelines.Extensions
                 cfg.AddBus(provider => ConfigureBus(provider, busConfiguration));
             });
             services.AddMassTransitHostedService();
+            services.Remove(services.FirstOrDefault(t => t.ServiceType == typeof(IPublishEndpoint) && t.Lifetime == ServiceLifetime.Scoped));
             return services;
         }
 
