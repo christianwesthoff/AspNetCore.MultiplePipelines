@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MassTransit" Version="6.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AspNetCore.ParallelPipelines.Example.Events\AspNetCore.ParallelPipelines.Example.Events.csproj" />
+      <ProjectReference Include="..\AspNetCore.ParallelPipelines\AspNetCore.ParallelPipelines.csproj" />
+    </ItemGroup>
+
+</Project>
