@@ -233,10 +233,10 @@ namespace AspNetCore.ParallelPipelines.Extensions
         IDictionary<string, IServiceProvider> PipelineServiceProviders { get; }
     }
 
-    public interface IRootServiceProviderBridge
-    {
-        IServiceProvider RootServiceProvider { get; set; }
-    }
+    // public interface IRootServiceProviderBridge
+    // {
+    //     IServiceProvider RootServiceProvider { get; set; }
+    // }
 
     
     public static class ParallelServiceProviderBridgeServiceExtension
@@ -253,10 +253,10 @@ namespace AspNetCore.ParallelPipelines.Extensions
             public IDictionary<string, IServiceProvider> PipelineServiceProviders { get; } = new Dictionary<string, IServiceProvider>();
         }
         
-        private class RootServiceProviderBridge : IRootServiceProviderBridge
-        {
-            public IServiceProvider RootServiceProvider { get; set; }
-        }
+        // private class RootServiceProviderBridge : IRootServiceProviderBridge
+        // {
+        //     public IServiceProvider RootServiceProvider { get; set; }
+        // }
     }
 
 

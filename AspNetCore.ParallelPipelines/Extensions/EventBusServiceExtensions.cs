@@ -20,6 +20,7 @@ namespace AspNetCore.ParallelPipelines.Extensions
                 cfg.AddBus(provider => ConfigureBus(provider, busConfiguration));
             });
             services.AddMassTransitHostedService();
+            // Hotfix mass transit
             services.Remove(services.FirstOrDefault(t => t.ServiceType == typeof(IPublishEndpoint) && t.Lifetime == ServiceLifetime.Scoped));
             return services;
         }
