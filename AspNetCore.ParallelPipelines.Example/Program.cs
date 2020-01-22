@@ -19,9 +19,8 @@ namespace AspNetCore.ParallelPipelines.Example
                         webBuilder.UseKestrel()
                             .UseMultiplePipelines(builder =>
                             {
-                                builder.UseBranch<Test.Startup>("test", "/test");
-                                builder.UseBranch<Test2.Startup>("test2", "/test2");
-                                // builder.UseBranch<Mvc.Startup>("default", "");
+                                builder.UseBranch<Test.Startup>("endpoint", "/api");
+                                builder.UseBranch<Test2.Startup>("endpoint2", "/api2");
                             });
                     });
     }

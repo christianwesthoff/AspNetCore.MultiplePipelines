@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.ParallelPipeline
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.ParallelPipelines.Example.Events", "AspNetCore.ParallelPipelines.Example.Events\AspNetCore.ParallelPipelines.Example.Events.csproj", "{AB812737-554B-4240-853E-3AD443538BF1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{04F168CE-CD81-459E-A10F-59C399A85F08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,11 @@ Global
 		{AB812737-554B-4240-853E-3AD443538BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB812737-554B-4240-853E-3AD443538BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB812737-554B-4240-853E-3AD443538BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EE727D2C-00B2-4064-BE16-64AD842176D5} = {04F168CE-CD81-459E-A10F-59C399A85F08}
+		{AB812737-554B-4240-853E-3AD443538BF1} = {04F168CE-CD81-459E-A10F-59C399A85F08}
+		{F1B885D4-4B18-4DD8-880B-5ADB46B8A9A3} = {04F168CE-CD81-459E-A10F-59C399A85F08}
+		{749B8BE9-7AAD-4808-8ECC-55BE1AA2017C} = {04F168CE-CD81-459E-A10F-59C399A85F08}
 	EndGlobalSection
 EndGlobal
